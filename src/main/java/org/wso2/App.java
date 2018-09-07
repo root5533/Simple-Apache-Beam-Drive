@@ -20,7 +20,7 @@ public class App
 
         @ProcessElement
         public void processElement(@Element String word, OutputReceiver<Integer> out) {
-            System.out.println("Word is >>>>>>>>>>>>>>>>>>>>>>>>>> " + word);
+//            System.out.println("Word is >>>>>>>>>>>>>>>>>>>>>>>>>> " + word);
             out.output(word.length());
         }
 
@@ -37,17 +37,17 @@ public class App
 
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        String delimiter = " ";
 
         PipelineOptions options = PipelineOptionsFactory.create();
         Pipeline pipe = Pipeline.create(options);
 
-        PCollection<String> lines = pipe.apply("Read input text", TextIO.read().from("input.txt"));
+        PCollection<String> lines = pipe.apply("Read input text", TextIO.read().from("input.txt").withDelimiter(delimiter.getBytes()));
 
         PCollection<Integer> lengthCount = lines.apply(ParDo.of(new ComputeWordLength()));
 
         lengthCount.apply(ParDo.of(new IntToString()))
-                .apply("Writing output text", TextIO.write().to("output.txt"));
+                .apply("Writing output text", TextIO.write().to("output"));
 
         pipe.run();
 
